@@ -1,0 +1,374 @@
+DROP TABLE IF EXISTS pregunta;
+DROP TABLE IF EXISTS opcion;
+DROP TABLE IF EXISTS documento;
+DROP TABLE IF EXISTS imagen;
+DROP TABLE IF EXISTS video;
+DROP TABLE IF EXISTS modulo;
+DROP TABLE IF EXISTS progreso;
+DROP TABLE IF EXISTS certificado;
+DROP TABLE IF EXISTS comentario;
+DROP TABLE IF EXISTS denuncia;
+DROP TABLE IF EXISTS cursa;
+DROP TABLE IF EXISTS dicta;
+DROP TABLE IF EXISTS rolPermiso;
+DROP TABLE IF EXISTS usuarioRol;
+DROP TABLE IF EXISTS examen;
+DROP TABLE IF EXISTS permiso;
+DROP TABLE IF EXISTS rol;
+DROP TABLE IF EXISTS categoria;
+DROP TABLE IF EXISTS curso;
+DROP TABLE IF EXISTS usuario;
+/*************************************** permiso*/
+
+CREATE TABLE permiso
+(
+ id     INT NOT NULL AUTO_INCREMENT,
+ nombre VARCHAR(50) NOT NULL ,
+
+ CONSTRAINT PK_permiso PRIMARY KEY CLUSTERED (id ASC)
+);
+/*************************************** rol*/
+
+CREATE TABLE rol
+(
+ id     INT NOT NULL AUTO_INCREMENT,
+ nombre VARCHAR(50) NOT NULL ,
+
+ CONSTRAINT PK_rol PRIMARY KEY CLUSTERED (id ASC)
+);
+/*************************************** categoria*/
+
+CREATE TABLE categoria
+(
+ id          INT NOT NULL AUTO_INCREMENT,
+ descripcion VARCHAR(50) NOT NULL ,
+
+ CONSTRAINT PK_materia PRIMARY KEY CLUSTERED (id ASC)
+);
+/*************************************** curso*/
+
+CREATE TABLE curso
+(
+ id           INT NOT NULL AUTO_INCREMENT,
+ nombre       VARCHAR(50) NOT NULL ,
+ cantModulos  INT NOT NULL ,
+ ayudante1    INT NULL ,
+ ayudante2    INT NULL ,
+ cupo         INT NULL ,
+ fechaInicio  DATE NULL ,
+ fechaFin     DATE NULL ,
+ pa         INT NULL ,
+ preferencial INT NULL ,
+ monto        FLOAT NULL ,
+
+ CONSTRAINT PK_profesor PRIMARY KEY CLUSTERED (id ASC)
+);
+/*************************************** usuario*/
+
+CREATE TABLE usuario
+(
+ id       INT NOT NULL AUTO_INCREMENT,
+ nombre   VARCHAR(50) NOT NULL ,
+ apellido VARCHAR(50) NOT NULL ,
+ dni      INT NOT NULL ,
+ email    VARCHAR(50) NOT NULL ,
+
+ CONSTRAINT PK_alumno PRIMARY KEY CLUSTERED (id ASC)
+);
+/*************************************** modulo*/
+
+CREATE TABLE modulo
+(
+ id      INT NOT NULL AUTO_INCREMENT,
+ idCurso INT NOT NULL ,
+ titulo  VARCHAR(50) NOT NULL ,
+
+ CONSTRAINT PK_modulo PRIMARY KEY CLUSTERED (id ASC, idCurso ASC),
+ CONSTRAINT FK_385 FOREIGN KEY (idCurso)
+  REFERENCES curso(id)
+);
+/*SKIP Index: fkIdx_385*/
+/*************************************** progreso*/
+
+CREATE TABLE progreso
+(
+ id        INT NOT NULL AUTO_INCREMENT,
+ idUsuario INT NOT NULL ,
+
+ CONSTRAINT PK_avances PRIMARY KEY CLUSTERED (id ASC, idUsuario ASC),
+ CONSTRAINT FK_337 FOREIGN KEY (idUsuario)
+  REFERENCES usuario(id)
+);
+/*SKIP Index: fkIdx_337*/
+/*************************************** certificado*/
+
+CREATE TABLE certificado
+(
+ id        INT NOT NULL AUTO_INCREMENT,
+ idCurso   INT NOT NULL ,
+ idUsuario INT NOT NULL ,
+ horas     INT NOT NULL ,
+
+ CONSTRAINT PK_certificado PRIMARY KEY CLUSTERED (id ASC, idCurso ASC, idUsuario ASC),
+ CONSTRAINT FK_325 FOREIGN KEY (idCurso)
+  REFERENCES curso(id),
+ CONSTRAINT FK_329 FOREIGN KEY (idUsuario)
+  REFERENCES usuario(id)
+);
+/*SKIP Index: fkIdx_325*/
+/*SKIP Index: fkIdx_329*/
+/*************************************** comentario*/
+
+CREATE TABLE comentario
+(
+ id            INT NOT NULL AUTO_INCREMENT,
+ idCurso       INT NOT NULL ,
+ contenido     VARCHAR(50) NOT NULL ,
+ ParentidCurso INT NULL ,
+ Parentid      INT NULL ,
+
+ CONSTRAINT PK_comentario PRIMARY KEY CLUSTERED (id ASC, idCurso ASC),
+ CONSTRAINT FK_292 FOREIGN KEY (idCurso)
+  REFERENCES curso(id),
+ CONSTRAINT FK_297 FOREIGN KEY (ParentidCurso, Parentid)
+  REFERENCES comentario(idCurso, id)
+);
+/*SKIP Index: fkIdx_292*/
+/*SKIP Index: fkIdx_297*/
+/*************************************** denuncia*/
+
+CREATE TABLE denuncia
+(
+ id        INT NOT NULL AUTO_INCREMENT,
+ idUsuario INT NOT NULL ,
+ contenido VARCHAR(100) NOT NULL ,
+
+ CONSTRAINT PK_denuncia PRIMARY KEY CLUSTERED (id ASC, idUsuario ASC),
+ CONSTRAINT FK_283 FOREIGN KEY (idUsuario)
+  REFERENCES usuario(id)
+);
+/*SKIP Index: fkIdx_283*/
+/*************************************** cursa*/
+
+CREATE TABLE cursa
+(
+ idUsuario INT NOT NULL AUTO_INCREMENT,
+ idCurso   INT NOT NULL ,
+
+ CONSTRAINT PK_cursa PRIMARY KEY CLUSTERED (idUsuario ASC, idCurso ASC),
+ CONSTRAINT fk_256 FOREIGN KEY (idUsuario)
+  REFERENCES usuario(id),
+ CONSTRAINT fk_261 FOREIGN KEY (idCurso)
+  REFERENCES curso(id)
+);
+/*SKIP Index: fkIdx_256*/
+/*SKIP Index: fkIdx_261*/
+/*************************************** dicta*/
+
+CREATE TABLE dicta
+(
+ idUsuario INT NOT NULL ,
+ idCurso   INT NOT NULL ,
+
+ CONSTRAINT PK_dicta PRIMARY KEY CLUSTERED (idUsuario ASC, idCurso ASC),
+ CONSTRAINT fk_245 FOREIGN KEY (idUsuario)
+  REFERENCES usuario(id),
+ CONSTRAINT fk_250 FOREIGN KEY (idCurso)
+  REFERENCES curso(id)
+);
+/*SKIP Index: fkIdx_245*/
+/*SKIP Index: fkIdx_250*/
+/*************************************** rolPermiso*/
+
+CREATE TABLE rolPermiso
+(
+ idPermiso INT NOT NULL ,
+ idRol     INT NOT NULL ,
+
+ CONSTRAINT PK_rolPermiso PRIMARY KEY CLUSTERED (idPermiso ASC, idRol ASC),
+ CONSTRAINT fk_227 FOREIGN KEY (idPermiso)
+  REFERENCES permiso(id),
+ CONSTRAINT fk_235 FOREIGN KEY (idRol)
+  REFERENCES rol(id)
+);
+/*SKIP Index: fkIdx_227*/
+/*SKIP Index: fkIdx_235*/
+/*************************************** usuarioRol*/
+
+CREATE TABLE usuarioRol
+(
+ idRol     INT NOT NULL ,
+ idUsuario INT NOT NULL ,
+
+ CONSTRAINT PK_usuarioRol PRIMARY KEY CLUSTERED (idRol ASC, idUsuario ASC),
+ CONSTRAINT fk_202 FOREIGN KEY (idRol)
+  REFERENCES rol(id),
+ CONSTRAINT fk_209 FOREIGN KEY (idUsuario)
+  REFERENCES usuario(id)
+);
+/*SKIP Index: fkIdx_202*/
+/*SKIP Index: fkIdx_209*/
+/*************************************** examen*/
+
+CREATE TABLE examen
+(
+ id          INT NOT NULL AUTO_INCREMENT,
+ nota        INT NOT NULL ,
+ descripcion VARCHAR(50) NOT NULL ,
+ idCurso     INT NOT NULL ,
+ fecha       DATETIME NOT NULL ,
+
+ CONSTRAINT PK_examen PRIMARY KEY CLUSTERED (id ASC),
+ CONSTRAINT fk_217 FOREIGN KEY (idCurso)
+  REFERENCES curso(id)
+);
+/*SKIP Index: fkIdx_217*/
+/*************************************** documento*/
+
+CREATE TABLE documento
+(
+ id       INT NOT NULL AUTO_INCREMENT,
+ idModulo INT NOT NULL ,
+ idCurso  INT NOT NULL ,
+ url      VARCHAR(150) NOT NULL ,
+
+ CONSTRAINT PK_documento PRIMARY KEY CLUSTERED (id ASC, idModulo ASC, idCurso ASC),
+ CONSTRAINT FK_380 FOREIGN KEY (idModulo, idCurso)
+  REFERENCES modulo(id, idCurso)
+);
+/*SKIP Index: fkIdx_380*/
+/*************************************** imagen*/
+
+CREATE TABLE imagen
+(
+ id       INT NOT NULL AUTO_INCREMENT,
+ idModulo INT NOT NULL ,
+ idCurso  INT NOT NULL ,
+ url      VARCHAR(150) NOT NULL ,
+
+ CONSTRAINT PK_imagen PRIMARY KEY CLUSTERED (id ASC, idModulo ASC, idCurso ASC),
+ CONSTRAINT FK_365 FOREIGN KEY (idModulo, idCurso)
+  REFERENCES modulo(id, idCurso)
+);
+/*SKIP Index: fkIdx_365*/
+/*************************************** video*/
+
+CREATE TABLE video
+(
+ id       INT NOT NULL AUTO_INCREMENT,
+ idModulo INT NOT NULL ,
+ idCurso  INT NOT NULL ,
+ url      VARCHAR(150) NOT NULL ,
+
+ CONSTRAINT PK_video PRIMARY KEY CLUSTERED (id ASC, idModulo ASC, idCurso ASC),
+ CONSTRAINT FK_370 FOREIGN KEY (idModulo, idCurso)
+  REFERENCES modulo(id, idCurso)
+);
+/*SKIP Index: fkIdx_370*/
+/*************************************** opcion*/
+
+CREATE TABLE opcion
+(
+ id         INT NOT NULL AUTO_INCREMENT,
+ texto      VARCHAR(50) NOT NULL ,
+ idPregunta INT NOT NULL ,
+
+ CONSTRAINT PK_respuesta PRIMARY KEY CLUSTERED (id ASC)
+ 
+);
+
+
+/*SKIP Index: fkIdx_171*/
+/*************************************** pregunta*/
+
+CREATE TABLE pregunta
+(
+ id          INT NOT NULL AUTO_INCREMENT,
+ texto       VARCHAR(50) NOT NULL ,
+ valor       INT NOT NULL ,
+ idcategoria INT NOT NULL ,
+ idOpcion    INT NOT NULL ,
+ idExamen    INT NOT NULL ,
+
+ CONSTRAINT PK_pregunta PRIMARY KEY CLUSTERED (id ASC),
+ CONSTRAINT fk_145 FOREIGN KEY (idcategoria)
+  REFERENCES categoria(id),
+ CONSTRAINT fk_153 FOREIGN KEY (idOpcion)
+  REFERENCES opcion(id),
+ CONSTRAINT fk_175 FOREIGN KEY (idExamen)
+  REFERENCES examen(id)
+);
+
+
+ALTER TABLE opcion ADD CONSTRAINT fk_171 FOREIGN KEY (idPregunta)
+  REFERENCES pregunta(id);
+
+
+
+/*SKIP Index: fkIdx_145*/
+
+/*SKIP Index: fkIdx_153*/
+
+/*SKIP Index: fkIdx_175*/
+
+
+ALTER TABLE categoria ADD estado int;
+
+ALTER TABLE certificado ADD estado int;
+
+ALTER TABLE comentario ADD estado int;
+
+ALTER TABLE cursa ADD estado int;
+
+ALTER TABLE curso ADD estado int;
+
+ALTER TABLE denuncia ADD estado int;
+
+ALTER TABLE dicta ADD estado int;
+
+ALTER TABLE documento ADD estado int;
+
+ALTER TABLE examen ADD estado int;
+
+ALTER TABLE imagen ADD estado int;
+
+ALTER TABLE modulo ADD estado int;
+
+ALTER TABLE opcion ADD estado int;
+
+ALTER TABLE permiso ADD estado int;
+
+ALTER TABLE pregunta ADD estado int;
+
+ALTER TABLE progreso ADD estado int;
+
+ALTER TABLE rol ADD estado int;
+
+ALTER TABLE rolpermiso ADD estado int;
+
+ALTER TABLE usuario ADD estado int;
+
+ALTER TABLE usuariorol ADD estado int;
+
+ALTER TABLE video ADD estado int;
+
+
+
+alter table usuario add clave varchar(50) not null;
+
+alter table modulo add contenido varchar(5000);
+ALTER TABLE progreso ADD idModulo int NOT NULL;
+
+ALTER TABLE progreso ADD CONSTRAINT fk_id_modulo FOREIGN KEY (idModulo) REFERENCES modulo(id);
+alter table curso drop cantModulos;
+
+
+alter table curso add resumen varchar(5000);
+
+insert into rol(nombre,estado) values('ADMIN',1);
+
+insert into rol(nombre,estado) values('ALUMNO',1);
+
+insert into rol(nombre,estado) values('PROFESOR',1);
+
+
